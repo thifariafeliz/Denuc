@@ -1,0 +1,12 @@
+#ifndef ERRORS_H
+#define ERRORS_H
+
+typedef enum List_Error {
+    LIST_OK = 0,
+    LIST_FAILED_ALLOC,
+    LIST_ARG_IS_NULL,
+    LIST_UNDEFINED_ERROR,
+    LIST_NEXT_SNB_NULL
+} List_Error;
+
+#endif
