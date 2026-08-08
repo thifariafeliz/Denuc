@@ -9,4 +9,9 @@ typedef enum List_Error {
     LIST_NEXT_SNB_NULL
 } List_Error;
 
+typedef enum File_Error {
+    FILE_OK,
+    FILE_ARG_IS_NULL,
+} File_Error;
+
 #endif
