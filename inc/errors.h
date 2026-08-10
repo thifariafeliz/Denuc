@@ -12,6 +12,9 @@ typedef enum List_Error {
 typedef enum File_Error {
     FILE_OK,
     FILE_ARG_IS_NULL,
+    FILE_PARSE_ERROR,
+    FILE_FAILED_ALLOC,
+    FILE_FAILED_ENQUEUE,
 } File_Error;
 
 #endif

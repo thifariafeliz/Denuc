@@ -7,6 +7,7 @@
 #include "../inc/queue.h"
 #include "../inc/list.h"
 #include "../inc/utils.h"
+#include "../inc/denuncia.h"
 
 #define BUFFER_SIZE 1024
 
@@ -46,17 +47,81 @@ File_Error append_to_queue(FILE *file, Queue *queue, LogInfo *loginfo) {
         switch (id_result.status) {
             case PARSE_OK:
                 break;
-
-
             case PARSE_NULL_ARG:
-
+                *loginfo = (LogInfo){.message = "Argument is null.", .detail = "`parse_int(const char *str)` needs a not null argument.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
             case PARSE_EMPTY:
+                *loginfo = (LogInfo){.message = "ID is empty", .detail = "ID cannot be empty.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
             case PARSE_INVALID:
-
+                *loginfo = (LogInfo){.message = "ID is invalid", .detail = "`append_to_queue` needs a valid number for ID.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
             case PARSE_OVERFLOW:
+                *loginfo = (LogInfo){.message = "Overflow in ID.", .detail = "ID has a number greater or lower than the possible value for integers.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
+        }
+
+        IntParseResult status_result = parse_int(status_str);
+        switch (status_result.status) {
+            case PARSE_OK:
+                break;
+            case PARSE_NULL_ARG:
+                *loginfo = (LogInfo){.message = "Argument is null.", .detail = "`parse_int(const char *str)` needs a not null argument.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
+            case PARSE_EMPTY:
+                *loginfo = (LogInfo){.message = "ID is empty", .detail = "ID cannot be empty.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
+            case PARSE_INVALID:
+                *loginfo = (LogInfo){.message = "ID is invalid", .detail = "`append_to_queue` needs a valid number for ID.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
+            case PARSE_OVERFLOW:
+                *loginfo = (LogInfo){.message = "Overflow in ID.", .detail = "ID has a number greater or lower than the possible value for integers.", .level = LOG_FATAL};
+                return FILE_PARSE_ERROR;
+        }
+
+        // char *status = NULL;       
+        //
+        // switch (status_str[0]) {
+        //     case '0':
+        //         status = "Pending";
+        //         break;
+        //     case '1':
+        //         status = "In progress";
+        //         break;
+        //     case '2':
+        //         status = "Done";
+        //         break;
+        //     default:
+        //         *loginfo = (LogInfo){.level = LOG_ERROR, .message = "Wrong status code.", .detail = "Status code is incorrect for some tasks."};
+        //         return FILE_PARSE_ERROR;
+        // }
+
+        Denuncia *nova_denuncia = malloc(sizeof(Denuncia));
+        if (nova_denuncia == NULL) {
+            *loginfo = (LogInfo){.level = LOG_FATAL, .message = "`malloc` failed.", .detail = "Failed to alloc new denounce."};
+            return FILE_FAILED_ALLOC;
+        }
+
+        nova_denuncia->id = id_result.value;
+        nova_denuncia->status = status_result.value;
+        nova_denuncia->title = stringo_create(title_str);
+        if (nova_denuncia->title == NULL) {
+            *loginfo = (LogInfo){.level = LOG_FATAL, .message = "Failed to stringify report.", .detail = "`nova_denuncia->title = stringo_create(title_str)` failed."};
+            return FILE_FAILED_ALLOC;
+        }
+        
+        switch (queue_enqueue(queue, (void*)nova_denuncia)) {
+            case LIST_OK:
+                break;
+            case LIST_ARG_IS_NULL:
+                *loginfo = (LogInfo){.level = LOG_FATAL, .message = "Failed to enqueue new report.", .detail = "Queue passed to `queue_enqueue` while `append_to_queue` is null."};
+                return FILE_FAILED_ENQUEUE;
+            case LIST_FAILED_ALLOC:
+                *loginfo = (LogInfo){.level = LOG_FATAL, .message = "Failed to enqueue new report.", .detail = "Failed to alloc space for new report in the queue."};
+                return FILE_FAILED_ENQUEUE;
         }
     }
 
-
+    loginfo = NULL;
     return FILE_OK;
 }

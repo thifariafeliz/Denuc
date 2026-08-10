@@ -1,5 +1,3 @@
-#include <stdlib.h>
-
 #include "../inc/list.h"
 #include "../inc/queue.h"
 

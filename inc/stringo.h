@@ -9,6 +9,6 @@ typedef struct Stringo {
     size_t capacity;
 } Stringo;
 
-
+Stringo *stringo_create(const char *cstr);
 
 #endif
