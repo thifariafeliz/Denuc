@@ -6,19 +6,27 @@
 #include "../inc/utils.h"
 
 IntParseResult parse_int(const char *str) {
+    if (str == NULL) {
+        return (IntParseResult){.value = 0, .status = PARSE_NULL_ARG};
+    }
+
     errno = 0;
     char *end = NULL;
-    double num = strtol(str, &end, 10);
+    long num = strtol(str, &end, 10);
 
     if (end == str) {
         return (IntParseResult){.value = 0, .status = PARSE_EMPTY};
     }
 
-    if (*end == '\n' || *end == '\0') {
+    while (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r') {
+        end++;
+    }
+
+    if (*end != '\0') {
         return (IntParseResult){.value = 0, .status = PARSE_INVALID};
     }
 
-    if (errno == ERANGE || errno > INT_MAX || errno < INT_MIN) {
+    if (errno == ERANGE || num > INT_MAX || num < INT_MIN) {
         return (IntParseResult){.value = 0, .status = PARSE_OVERFLOW};
     }
 

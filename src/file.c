@@ -8,6 +8,7 @@
 #include "../inc/list.h"
 #include "../inc/utils.h"
 #include "../inc/denuncia.h"
+#include "../inc/file.h"
 
 #define BUFFER_SIZE 1024
 
@@ -18,7 +19,7 @@ File_Error append_to_queue(FILE *file, Queue *queue, LogInfo *loginfo) {
     }
 
     char buffer[BUFFER_SIZE];
-    const char *delimiter = " | ";
+    const char *delimiter = "|";
 
     while (fgets(buffer, BUFFER_SIZE, file) != NULL) {
         buffer[strcspn(buffer, "\r\n")] = '\0';
@@ -31,16 +32,25 @@ File_Error append_to_queue(FILE *file, Queue *queue, LogInfo *loginfo) {
         if (id_str == NULL) {
             continue;
         }
+        while (*id_str == ' ' || *id_str == '\t') id_str++;
+        char *id_end = id_str + strlen(id_str) - 1;
+        while (id_end > id_str && (*id_end == ' ' || *id_end == '\t')) *id_end-- = '\0';
 
         char *title_str = strtok(NULL, delimiter);
         if (title_str == NULL) {
             continue;
         }
+        while (*title_str == ' ' || *title_str == '\t') title_str++;
+        char *title_end = title_str + strlen(title_str) - 1;
+        while (title_end > title_str && (*title_end == ' ' || *title_end == '\t')) *title_end-- = '\0';
 
         char *status_str = strtok(NULL, delimiter);
         if (status_str == NULL) {
             continue;
         }
+        while (*status_str == ' ' || *status_str == '\t') status_str++;
+        char *status_end = status_str + strlen(status_str) - 1;
+        while (status_end > status_str && (*status_end == ' ' || *status_end == '\t')) *status_end-- = '\0';
 
 
         IntParseResult id_result = parse_int(id_str);
@@ -120,23 +130,8 @@ File_Error write_to_file(FILE *file, Queue *queue, LogInfo *loginfo) {
 
     for (int i = 0; i < queue_size(queue); i++) {
         Denuncia *denuncia = (Denuncia*)node->data;
-        char *status = "";
 
-        switch (denuncia->status) {
-            case 0:
-                status = "Pending";
-                break;
-            case 1:
-                status = "In Progress";
-                break;
-            case 2:
-                status = "Done";
-                break;
-            default:
-                status = "";
-        }
-
-        fprintf(file, "%d | %s | %d", denuncia->id, denuncia->title->data, denuncia->status);
+        fprintf(file, "%d | %s | %d\n", denuncia->id, denuncia->title->data, denuncia->status);
         node = node->next;
     }
 

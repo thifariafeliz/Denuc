@@ -25,17 +25,18 @@ List_Error list_destroy(List* list) {
     void *data = NULL;
 
     while (list_size(list) > 0) {
-        if (list->destroy != NULL) {
-            switch (list_rem_next(list, NULL, (void**)&data)) {
-                case LIST_OK:
+        switch (list_rem_next(list, NULL, (void**)&data)) {
+            case LIST_OK:
+                if (list->destroy != NULL) {
                     list->destroy(data);
+                }
+                break;
 
-                case LIST_ARG_IS_NULL:
-                    return LIST_ARG_IS_NULL;
+            case LIST_ARG_IS_NULL:
+                return LIST_ARG_IS_NULL;
 
-                default:
-                    return LIST_UNDEFINED_ERROR;
-            }
+            default:
+                return LIST_UNDEFINED_ERROR;
         }
     }
 

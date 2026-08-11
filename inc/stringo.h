@@ -2,6 +2,7 @@
 #define STRINGO_H
 
 #include <stddef.h>
+#include "errors.h"
 
 typedef struct Stringo {
     char *data;
@@ -10,5 +11,6 @@ typedef struct Stringo {
 } Stringo;
 
 Stringo *stringo_create(const char *cstr);
+Stringo_Error stringo_take_input(Stringo *stringo);
 
 #endif
