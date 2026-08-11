@@ -17,4 +17,11 @@ typedef enum File_Error {
     FILE_FAILED_ENQUEUE,
 } File_Error;
 
+typedef enum Stringo_Error {
+    STRINGO_OK = 0,
+    STRINGO_EARLY_EOF,
+    STRINGO_ARG_IS_NULL,
+    STRINGO_FAILED_ALLOC,
+} Stringo_Error;
+
 #endif

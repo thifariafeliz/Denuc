@@ -79,23 +79,6 @@ File_Error append_to_queue(FILE *file, Queue *queue, LogInfo *loginfo) {
                 return FILE_PARSE_ERROR;
         }
 
-        // char *status = NULL;       
-        //
-        // switch (status_str[0]) {
-        //     case '0':
-        //         status = "Pending";
-        //         break;
-        //     case '1':
-        //         status = "In progress";
-        //         break;
-        //     case '2':
-        //         status = "Done";
-        //         break;
-        //     default:
-        //         *loginfo = (LogInfo){.level = LOG_ERROR, .message = "Wrong status code.", .detail = "Status code is incorrect for some tasks."};
-        //         return FILE_PARSE_ERROR;
-        // }
-
         Denuncia *nova_denuncia = malloc(sizeof(Denuncia));
         if (nova_denuncia == NULL) {
             *loginfo = (LogInfo){.level = LOG_FATAL, .message = "`malloc` failed.", .detail = "Failed to alloc new denounce."};
@@ -123,5 +106,39 @@ File_Error append_to_queue(FILE *file, Queue *queue, LogInfo *loginfo) {
     }
 
     loginfo = NULL;
+    return FILE_OK;
+}
+
+// Writes the queue content to the file
+File_Error write_to_file(FILE *file, Queue *queue, LogInfo *loginfo) {
+    if (file == NULL || queue == NULL) {
+        *loginfo = (LogInfo){.level = LOG_FATAL, .message = "One or more arguments are null.", .detail = "`write_to_file` cannot have null arguments for `FILE *file` and `Queue *queue` parameters."};
+        return FILE_ARG_IS_NULL;
+    }
+    
+    Node *node = queue->head;
+
+    for (int i = 0; i < queue_size(queue); i++) {
+        Denuncia *denuncia = (Denuncia*)node->data;
+        char *status = "";
+
+        switch (denuncia->status) {
+            case 0:
+                status = "Pending";
+                break;
+            case 1:
+                status = "In Progress";
+                break;
+            case 2:
+                status = "Done";
+                break;
+            default:
+                status = "";
+        }
+
+        fprintf(file, "%d | %s | %d", denuncia->id, denuncia->title->data, denuncia->status);
+        node = node->next;
+    }
+
     return FILE_OK;
 }
