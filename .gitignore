@@ -1,2 +1,6 @@
 build/
 *.out
+bin/
+denuncias.txt
+denuc.log
+
