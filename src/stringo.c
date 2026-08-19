@@ -8,10 +8,6 @@
 Stringo *stringo_create(const char *cstr) {
     Stringo *stringo = malloc(sizeof(Stringo));
     if (stringo == NULL) {
-        stringo->data = NULL;
-        stringo->length = 0;
-        stringo->capacity = 0;
-
         return stringo;
     }
 

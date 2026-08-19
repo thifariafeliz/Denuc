@@ -84,6 +84,10 @@ List_Error list_rem_next(List *list, Node *node, void **data) {
         return LIST_ARG_IS_NULL;
     }
 
+    if (list_size(list) == 0) {
+        return LIST_IS_EMPTY;
+    }
+
     Node *old_node = NULL;
 
     if (node == NULL) {

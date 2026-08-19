@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+// #include <string.h>
 
 #include "../inc/logs.h"
 #include "../inc/list.h"
@@ -20,6 +20,7 @@ static void denuncia_destroy(void *data) {
     }
     Denuncia *denuncia = (Denuncia*)data;
     if (denuncia->title != NULL) {
+        free(denuncia->title->data);
         free(denuncia->title);
     }
     free(denuncia);
@@ -147,6 +148,7 @@ static void complete_first_report(Queue *queue, FILE *logfile) {
 
     printf("\nCompleted report: ID: %d | Title: %s\n", denuncia->id, denuncia->title->data);
 
+    free(denuncia->title->data);
     free(denuncia->title);
     free(denuncia);
 }
@@ -186,7 +188,8 @@ int main(void) {
     while (running) {
         print_menu();
 
-        if (scanf("%d", &choice) != 1) {
+        int scan = scanf("%d", &choice);
+        if (scan != 1 || scan == EOF) {
             int c;
             while ((c = getchar()) != '\n' && c != EOF);
             printf("Invalid input. Please enter a number.\n");
